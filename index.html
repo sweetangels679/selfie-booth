@@ -1,0 +1,355 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sweet Angels Selfie Booth</title>
+    
+    <!-- App Icons and Mobile Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #f8fafc;
+        }
+
+        .hidden { display: none !important; }
+        
+        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
+        
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .animate-pulse-soft { animation: pulse-soft 2s infinite ease-in-out; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app-root" class="min-h-screen flex flex-col items-center">
+        
+        <!-- HOME SCREEN -->
+        <div id="screen-home" class="w-full max-w-6xl px-6 py-12 md:py-16 flex flex-col items-center">
+            <!-- Logo -->
+            <div class="flex flex-col items-center mb-10">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-pink-400 text-4xl">👶</span>
+                    <h1 class="text-4xl md:text-6xl font-black text-blue-500 tracking-tight text-center">
+                        SWEET <span class="text-pink-400">ANGELS</span>
+                    </h1>
+                </div>
+                <p class="text-sm font-bold tracking-[0.4em] text-gray-400 uppercase">Heaven4Kids</p>
+            </div>
+
+            <!-- Hero Mockup -->
+            <div class="relative w-full max-w-md mb-12 group">
+                <div class="absolute -top-6 -left-6 bg-white shadow-xl p-4 rounded-full animate-bounce-slow z-10 border border-blue-50 text-2xl">👶</div>
+                <div class="absolute -bottom-6 -right-6 bg-white shadow-xl p-4 rounded-full animate-pulse-soft z-10 border border-pink-50 text-2xl">❤️</div>
+                
+                <div class="bg-white p-5 rounded-[2.5rem] shadow-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-500 overflow-hidden border-4 border-white">
+                    <div class="aspect-[4/3] bg-gradient-to-br from-blue-100 via-white to-pink-100 rounded-3xl flex flex-col items-center justify-center relative">
+                        <div class="bg-white/80 px-8 py-3 rounded-full backdrop-blur-md shadow-lg text-blue-600 font-black text-2xl">
+                            HAPPY CUSTOMERS
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startCamera()" class="group relative inline-flex items-center justify-center px-12 py-7 font-black text-2xl text-white transition-all duration-300 bg-blue-500 rounded-3xl hover:bg-blue-600 active:scale-95 shadow-[0_20px_40px_rgba(59,130,246,0.3)] mb-20">
+                📸 TAKE A SELFIE
+            </button>
+
+            <!-- Wall of Smiles -->
+            <div class="w-full max-w-5xl">
+                <div class="flex items-center justify-between mb-10 border-b border-slate-200 pb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-blue-500 p-2 rounded-xl">
+                            <span class="text-white text-xl">⭐</span>
+                        </div>
+                        <h3 class="text-3xl font-black text-slate-700 tracking-tight">Wall of Smiles</h3>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest hidden sm:block">Recent Heavenly Memories</p>
+                </div>
+                
+                <div id="gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                    <!-- Thumbnails inserted here by JS -->
+                </div>
+                
+                <div id="gallery-empty" class="bg-white border-4 border-dashed border-slate-100 rounded-[3rem] p-20 text-center shadow-inner">
+                    <div class="text-6xl mb-4 opacity-20">📸</div>
+                    <p class="text-slate-400 font-bold text-xl">Be the first to join our Wall of Fame!</p>
+                </div>
+            </div>
+            
+            <p class="mt-20 text-slate-300 font-bold uppercase tracking-[0.3em] text-[10px]">
+                &copy; 2024 SWEET ANGELS HEAVEN4KIDS
+            </p>
+        </div>
+
+        <!-- CAMERA SCREEN -->
+        <div id="screen-camera" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 hidden">
+            <div class="relative w-full max-w-2xl h-full max-h-[85vh] sm:max-h-none sm:aspect-square bg-black overflow-hidden sm:rounded-[3rem] shadow-2xl border-8 border-white/5">
+                <video id="video" autoplay playsinline class="w-full h-full object-cover scale-x-[-1]"></video>
+                
+                <!-- Frame Overlay -->
+                <div class="absolute inset-0 pointer-events-none border-[20px] border-blue-400/10">
+                    <div class="absolute top-0 left-0 right-0 h-20 bg-white/95 backdrop-blur-md flex items-center justify-center shadow-sm">
+                        <span class="text-blue-600 font-black tracking-[0.2em] text-xs sm:text-lg">SWEET ANGELS - HAPPY CUSTOMER</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-20 bg-white/95 backdrop-blur-md flex items-center justify-center shadow-sm">
+                        <span class="text-pink-500 font-black tracking-[0.15em] text-xs sm:text-lg">I LOVE SHOPPING AT SWEET ANGELS</span>
+                    </div>
+                    
+                    <!-- Corner Decorations -->
+                    <div class="absolute top-4 left-4 text-2xl">⭐</div>
+                    <div class="absolute top-4 right-4 text-2xl">⭐</div>
+                    <div class="absolute bottom-4 left-4 text-2xl">⭐</div>
+                    <div class="absolute bottom-4 right-4 text-2xl">⭐</div>
+                </div>
+
+                <!-- Countdown -->
+                <div id="countdown-overlay" class="absolute inset-0 bg-black/40 backdrop-blur-[4px] flex items-center justify-center hidden">
+                    <div id="countdown-text" class="text-white text-[15rem] font-black drop-shadow-[0_10px_50px_rgba(0,0,0,0.5)] animate-pulse">5</div>
+                </div>
+            </div>
+
+            <div class="mt-10 flex gap-10 items-center">
+                <button onclick="goHome()" class="bg-white/10 p-6 rounded-full text-white hover:bg-white/20 transition-all text-3xl">🏠</button>
+                <button onclick="initiateCapture()" class="bg-white p-10 rounded-full text-blue-500 shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:scale-110 active:scale-90 border-[12px] border-blue-50 text-5xl">📸</button>
+                <button onclick="switchCamera()" class="bg-white/10 p-6 rounded-full text-white hover:bg-white/20 transition-all text-3xl">🔄</button>
+            </div>
+        </div>
+
+        <!-- PREVIEW SCREEN -->
+        <div id="screen-preview" class="fixed inset-0 bg-white/98 backdrop-blur-2xl flex flex-col items-center justify-center z-[60] p-8 hidden">
+            <div class="max-w-xl w-full flex flex-col items-center animate-in fade-in zoom-in duration-500">
+                <div class="bg-blue-500 text-white px-8 py-3 rounded-full font-black text-sm tracking-widest mb-8 shadow-lg animate-bounce">
+                    LOOKING ANGELIC! 👼
+                </div>
+                
+                <div class="bg-white shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-[3rem] overflow-hidden border-[15px] border-white transform -rotate-1 shadow-2xl">
+                    <img id="preview-img" src="" alt="Selfie" class="w-full h-auto">
+                </div>
+
+                <div class="mt-12 flex flex-col sm:flex-row gap-6 w-full">
+                    <button onclick="startCamera()" class="flex-1 bg-slate-100 text-slate-500 py-6 rounded-3xl font-black text-xl hover:bg-slate-200 transition-colors">
+                        🔄 RETAKE
+                    </button>
+                    <button onclick="showThankYou()" class="flex-1 bg-blue-500 text-white py-6 rounded-3xl font-black text-xl shadow-2xl shadow-blue-200 hover:bg-blue-600 transition-all">
+                        ✅ DONE
+                    </button>
+                </div>
+                
+                <p class="mt-8 text-slate-400 font-bold flex items-center gap-2">
+                    <span>📥</span> Photo saved to your device gallery!
+                </p>
+            </div>
+        </div>
+
+        <!-- THANK YOU SCREEN -->
+        <div id="screen-thankyou" class="fixed inset-0 bg-blue-500 flex flex-col items-center justify-center z-[100] text-white text-center p-8 hidden">
+            <div class="w-48 h-48 bg-white/20 rounded-full flex items-center justify-center mb-10 text-7xl animate-pulse">❤️</div>
+            <h1 class="text-7xl md:text-9xl font-black mb-8 tracking-tighter">THANK YOU!</h1>
+            <p class="text-3xl md:text-4xl font-bold opacity-90 italic">Visit Heaven4Kids Again Soon</p>
+            
+            <div class="mt-16 flex gap-4">
+                <span class="text-4xl animate-bounce" style="animation-delay: 0.1s">⭐</span>
+                <span class="text-4xl animate-bounce" style="animation-delay: 0.2s">⭐</span>
+                <span class="text-4xl animate-bounce" style="animation-delay: 0.3s">⭐</span>
+                <span class="text-4xl animate-bounce" style="animation-delay: 0.4s">⭐</span>
+                <span class="text-4xl animate-bounce" style="animation-delay: 0.5s">⭐</span>
+            </div>
+        </div>
+
+    </div>
+
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <script>
+        const state = {
+            stream: null,
+            facingMode: 'user',
+            recentPhotos: JSON.parse(localStorage.getItem('sweet_angels_photos') || '[]')
+        };
+
+        const screens = ['home', 'camera', 'preview', 'thankyou'];
+
+        // Initial Load
+        window.onload = () => {
+            updateGallery();
+        };
+
+        function showScreen(id) {
+            screens.forEach(s => document.getElementById(`screen-${s}`).classList.add('hidden'));
+            document.getElementById(`screen-${id}`).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        async function startCamera() {
+            try {
+                if (state.stream) stopCamera();
+                state.stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: state.facingMode, width: 1080, height: 1080 },
+                    audio: false
+                });
+                document.getElementById('video').srcObject = state.stream;
+                showScreen('camera');
+            } catch (err) {
+                alert("Please enable camera access to take a selfie!");
+            }
+        }
+
+        function stopCamera() {
+            if (state.stream) {
+                state.stream.getTracks().forEach(track => track.stop());
+                state.stream = null;
+            }
+        }
+
+        function switchCamera() {
+            state.facingMode = state.facingMode === 'user' ? 'environment' : 'user';
+            document.getElementById('video').classList.toggle('scale-x-[-1]', state.facingMode === 'user');
+            startCamera();
+        }
+
+        function goHome() {
+            stopCamera();
+            showScreen('home');
+        }
+
+        function initiateCapture() {
+            const overlay = document.getElementById('countdown-overlay');
+            const text = document.getElementById('countdown-text');
+            overlay.classList.remove('hidden');
+            
+            let count = 5;
+            text.innerText = count;
+            
+            const timer = setInterval(() => {
+                count--;
+                text.innerText = count;
+                if (count === 0) {
+                    clearInterval(timer);
+                    overlay.classList.add('hidden');
+                    capture();
+                }
+            }, 1000);
+        }
+
+        function capture() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const size = 1080;
+            canvas.width = size;
+            canvas.height = size;
+
+            ctx.save();
+            if (state.facingMode === 'user') {
+                ctx.scale(-1, 1);
+                ctx.translate(-size, 0);
+            }
+
+            const videoRatio = video.videoWidth / video.videoHeight;
+            let drawW, drawH, offX, offY;
+            if (videoRatio > 1) {
+                drawH = size; drawW = size * videoRatio;
+                offX = (size - drawW) / 2; offY = 0;
+            } else {
+                drawW = size; drawH = size / videoRatio;
+                offX = 0; offY = (size - drawH) / 2;
+            }
+            ctx.drawImage(video, offX, offY, drawW, drawH);
+            ctx.restore();
+
+            drawFrame(ctx, size);
+
+            const dataUrl = canvas.toDataURL('image/png');
+            document.getElementById('preview-img').src = dataUrl;
+            
+            // Save Photo Locally
+            state.recentPhotos.unshift(dataUrl);
+            state.recentPhotos = state.recentPhotos.slice(0, 12);
+            localStorage.setItem('sweet_angels_photos', JSON.stringify(state.recentPhotos));
+            updateGallery();
+
+            // Auto Download
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `SweetAngelsSelfie_${Date.now()}.png`;
+            link.click();
+
+            showScreen('preview');
+            stopCamera();
+            
+            state.timeout = setTimeout(() => showThankYou(), 5000);
+        }
+
+        function drawFrame(ctx, s) {
+            ctx.strokeStyle = '#60A5FA';
+            ctx.lineWidth = 40;
+            ctx.strokeRect(20, 20, s - 40, s - 40);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.fillRect(0, 0, s, 140);
+            ctx.fillStyle = '#3B82F6';
+            ctx.font = 'bold 48px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('SWEET ANGELS - HAPPY CUSTOMER', s / 2, 90);
+
+            ctx.fillRect(0, s - 140, s, 140);
+            ctx.fillStyle = '#F472B6';
+            ctx.font = 'bold 42px sans-serif';
+            ctx.fillText('I LOVE SHOPPING AT SWEET ANGELS', s / 2, s - 60);
+
+            const star = (x, y, r) => {
+                ctx.fillStyle = '#FBBF24';
+                ctx.beginPath();
+                for(let i=0; i<5; i++){
+                    ctx.lineTo(x + Math.cos((18+72*i)*Math.PI/180)*r, y - Math.sin((18+72*i)*Math.PI/180)*r);
+                    ctx.lineTo(x + Math.cos((54+72*i)*Math.PI/180)*r/2, y - Math.sin((54+72*i)*Math.PI/180)*r/2);
+                }
+                ctx.fill();
+            };
+            star(70, 70, 30); star(s-70, 70, 30);
+            star(70, s-70, 30); star(s-70, s-70, 30);
+        }
+
+        function updateGallery() {
+            const grid = document.getElementById('gallery-grid');
+            const empty = document.getElementById('gallery-empty');
+            if (state.recentPhotos.length > 0) {
+                empty.classList.add('hidden');
+                grid.innerHTML = state.recentPhotos.map(src => `
+                    <div class="aspect-square rounded-[2rem] overflow-hidden shadow-lg border-4 border-white transform hover:-translate-y-2 transition-all duration-300">
+                        <img src="${src}" class="w-full h-full object-cover">
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showThankYou() {
+            clearTimeout(state.timeout);
+            showScreen('thankyou');
+            setTimeout(() => {
+                showScreen('home');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
+```

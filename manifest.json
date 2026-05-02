@@ -1,0 +1,16 @@
+{
+  "name": "SELFIE TIME",
+  "short_name": "SELFIE TIME",
+  "display": "fullscreen",
+  "orientation": "any",
+  "start_url": "https://sweetangels679.github.io/selfie-booth/",
+  "dir": "auto",
+  "categories": "entertainment",
+  "icons": [
+    {
+      "src": "selfie time.png",
+      "type": "image/png",
+      "sizes": "1104x1106"
+    }
+  ]
+}

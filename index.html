@@ -25,6 +25,10 @@
         .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
         @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         .animate-pulse-soft { animation: pulse-soft 2s infinite ease-in-out; }
+        
+        /* Smooth transitions for screens */
+        .screen-fade { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -32,7 +36,7 @@
     <div id="app-root" class="min-h-screen flex flex-col items-center">
         
         <!-- HOME SCREEN -->
-        <div id="screen-home" class="w-full max-w-6xl px-6 py-12 md:py-16 flex flex-col items-center">
+        <div id="screen-home" class="w-full max-w-6xl px-6 py-12 md:py-16 flex flex-col items-center screen-fade">
             <div class="flex flex-col items-center mb-10">
                 <div class="flex items-center gap-2 mb-1">
                     <span class="text-pink-400 text-4xl">👶</span>
@@ -55,7 +59,8 @@
                 </div>
             </div>
 
-            <button onclick="startCamera()" class="group relative inline-flex items-center justify-center px-12 py-7 font-black text-2xl text-white transition-all duration-300 bg-blue-500 rounded-3xl hover:bg-blue-600 active:scale-95 shadow-[0_20px_40px_rgba(59,130,246,0.3)] mb-20">
+            <!-- "Take a Selfie" Button -->
+            <button id="btn-start" class="group relative inline-flex items-center justify-center px-12 py-7 font-black text-2xl text-white transition-all duration-300 bg-blue-500 rounded-3xl hover:bg-blue-600 active:scale-95 shadow-[0_20px_40px_rgba(59,130,246,0.3)] mb-20">
                 📸 TAKE A SELFIE
             </button>
 
@@ -64,7 +69,7 @@
                 <div class="flex items-center justify-between mb-10 border-b border-slate-200 pb-6">
                     <div class="flex items-center gap-3">
                         <div class="bg-blue-500 p-2 rounded-xl"><span class="text-white text-xl">⭐</span></div>
-                        <h3 class="text-3xl font-black text-slate-700 tracking-tight">Cloud Wall of Smiles</h3>
+                        <h3 class="text-3xl font-black text-slate-700 tracking-tight">Wall of Smiles</h3>
                     </div>
                     <p id="cloud-status" class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">● Live Sync Active</p>
                 </div>
@@ -76,8 +81,8 @@
         </div>
 
         <!-- CAMERA SCREEN -->
-        <div id="screen-camera" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 hidden">
-            <div class="relative w-full max-w-2xl h-full max-h-[85vh] sm:max-h-none sm:aspect-square bg-black overflow-hidden sm:rounded-[3rem] shadow-2xl">
+        <div id="screen-camera" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 hidden screen-fade">
+            <div class="relative w-full max-w-2xl h-full max-h-[85vh] sm:max-h-none sm:aspect-square bg-black overflow-hidden sm:rounded-[3rem] shadow-2xl border-8 border-white/5">
                 <video id="video" autoplay playsinline class="w-full h-full object-cover scale-x-[-1]"></video>
                 <div class="absolute inset-0 pointer-events-none border-[20px] border-blue-400/10">
                     <div class="absolute top-0 left-0 right-0 h-20 bg-white/95 flex items-center justify-center">
@@ -92,31 +97,31 @@
                 </div>
             </div>
             <div class="mt-10 flex gap-10 items-center">
-                <button onclick="goHome()" class="bg-white/10 p-6 rounded-full text-white text-3xl">🏠</button>
-                <button onclick="initiateCapture()" class="bg-white p-10 rounded-full text-blue-500 border-[12px] border-blue-50 text-5xl">📸</button>
-                <button onclick="switchCamera()" class="bg-white/10 p-6 rounded-full text-white text-3xl">🔄</button>
+                <button id="btn-home" class="bg-white/10 p-6 rounded-full text-white text-3xl">🏠</button>
+                <button id="btn-capture" class="bg-white p-10 rounded-full text-blue-500 border-[12px] border-blue-50 text-5xl">📸</button>
+                <button id="btn-switch" class="bg-white/10 p-6 rounded-full text-white text-3xl">🔄</button>
             </div>
         </div>
 
         <!-- PREVIEW SCREEN -->
-        <div id="screen-preview" class="fixed inset-0 bg-white/98 backdrop-blur-2xl flex flex-col items-center justify-center z-[60] p-8 hidden">
+        <div id="screen-preview" class="fixed inset-0 bg-white/98 backdrop-blur-2xl flex flex-col items-center justify-center z-[60] p-8 hidden screen-fade">
             <div class="max-w-xl w-full flex flex-col items-center">
-                <div id="upload-status" class="bg-blue-500 text-white px-8 py-3 rounded-full font-black text-sm mb-8">SAVING TO CLOUD...</div>
+                <div id="upload-status" class="bg-blue-500 text-white px-8 py-3 rounded-full font-black text-sm mb-8">SAVING PHOTO...</div>
                 
                 <div class="bg-white shadow-2xl rounded-[3rem] overflow-hidden border-[15px] border-white transform -rotate-1 relative">
                     <img id="preview-img" src="" alt="Selfie" class="w-full h-auto">
                 </div>
 
                 <div class="mt-12 flex flex-col sm:flex-row gap-4 w-full">
-                    <button onclick="sharePhoto()" class="flex-1 bg-green-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">📤 SHARE TO GOOGLE</button>
-                    <button onclick="startCamera()" class="flex-1 bg-slate-100 text-slate-500 py-6 rounded-3xl font-black text-xl">🔄 RETAKE</button>
-                    <button onclick="showThankYou()" class="flex-1 bg-blue-500 text-white py-6 rounded-3xl font-black text-xl shadow-2xl">✅ DONE</button>
+                    <button id="btn-share" class="flex-1 bg-green-500 text-white py-6 rounded-3xl font-black text-xl shadow-lg">📤 SHARE TO GOOGLE</button>
+                    <button id="btn-retake" class="flex-1 bg-slate-100 text-slate-500 py-6 rounded-3xl font-black text-xl">🔄 RETAKE</button>
+                    <button id="btn-done" class="flex-1 bg-blue-500 text-white py-6 rounded-3xl font-black text-xl shadow-2xl">✅ DONE</button>
                 </div>
             </div>
         </div>
 
         <!-- THANK YOU SCREEN -->
-        <div id="screen-thankyou" class="fixed inset-0 bg-blue-500 flex flex-col items-center justify-center z-[100] text-white text-center p-8 hidden">
+        <div id="screen-thankyou" class="fixed inset-0 bg-blue-500 flex flex-col items-center justify-center z-[100] text-white text-center p-8 hidden screen-fade">
             <div class="w-48 h-48 bg-white/20 rounded-full flex items-center justify-center mb-10 text-7xl animate-pulse">❤️</div>
             <h1 class="text-7xl font-black mb-8">THANK YOU!</h1>
             <p class="text-3xl font-bold opacity-90">Visit Heaven4Kids Again Soon</p>
@@ -130,108 +135,124 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Config (Provided by environment)
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // Environment variables or local fallbacks
+        const firebaseConfigRaw = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sweet-angels-default';
+        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db = null;
+        let auth = null;
+
+        // Initialize Firebase safely
+        if (firebaseConfigRaw) {
+            try {
+                const app = initializeApp(JSON.parse(firebaseConfigRaw));
+                auth = getAuth(app);
+                db = getFirestore(app);
+                
+                const initAuth = async () => {
+                    if (initialToken) {
+                        await signInWithCustomToken(auth, initialToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+                
+                onAuthStateChanged(auth, (user) => {
+                    state.user = user;
+                    if (user) startGalleryListener();
+                });
+                
+                initAuth();
+            } catch (e) {
+                console.warn("Cloud features disabled: Config missing or invalid.");
+            }
+        }
 
         const state = {
             stream: null,
             facingMode: 'user',
-            recentPhotos: [],
+            recentPhotos: JSON.parse(localStorage.getItem('sweet_angels_local_cache') || '[]'),
             user: null,
             currentPhotoUrl: null
         };
 
         const screens = ['home', 'camera', 'preview', 'thankyou'];
 
-        // Auth Setup - Rule 3: Always call auth first and await it
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Authentication failed:", error);
-            }
-        };
+        // Initial Gallery Load (Local)
+        updateGallery();
 
-        onAuthStateChanged(auth, (user) => {
-            state.user = user;
-            if (user) {
-                startGalleryListener();
-            }
-        });
-
-        initAuth();
-
-        // Listen for all photos from any device - Rule 2: No complex queries (removed limit)
         function startGalleryListener() {
-            if (!state.user) return; // Guard operation
-            
+            if (!db || !state.user) return;
             const selfieCollection = collection(db, 'artifacts', appId, 'public', 'data', 'selfies');
-            const q = query(selfieCollection); // Removed limit(24) to follow Rule 2
+            const q = query(selfieCollection);
             
             onSnapshot(q, (snapshot) => {
                 const photos = [];
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     if (data && data.image) {
-                        photos.push({
-                            image: data.image,
-                            timestamp: data.timestamp || 0
-                        });
+                        photos.push({ image: data.image, timestamp: data.timestamp || 0 });
                     }
                 });
-                
-                // Sort in memory instead of Firestore to follow Rule 2
                 photos.sort((a, b) => b.timestamp - a.timestamp);
-                
                 state.recentPhotos = photos.map(p => p.image).slice(0, 24);
+                localStorage.setItem('sweet_angels_local_cache', JSON.stringify(state.recentPhotos));
                 updateGallery();
             }, (error) => {
-                console.error("Gallery listener error:", error);
-                document.getElementById('cloud-status').innerText = "● Sync Error";
-                document.getElementById('cloud-status').classList.replace('text-blue-400', 'text-red-400');
+                document.getElementById('cloud-status').innerText = "● Local Mode";
             });
         }
 
+        // Global functions attached to window for HTML access
         window.startCamera = async function() {
             try {
                 if (state.stream) stopCamera();
                 state.stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: state.facingMode, width: 1080, height: 1080 },
+                    video: { facingMode: state.facingMode, width: { ideal: 1080 }, height: { ideal: 1080 } },
                     audio: false
                 });
                 document.getElementById('video').srcObject = state.stream;
                 showScreen('camera');
-            } catch (err) { alert("Enable camera access!"); }
+            } catch (err) { 
+                console.error(err);
+                alert("Camera error: Please ensure you have given permission to use the camera."); 
+            }
         };
 
         window.stopCamera = function() {
-            if (state.stream) { state.stream.getTracks().forEach(t => t.stop()); state.stream = null; }
+            if (state.stream) {
+                state.stream.getTracks().forEach(t => t.stop());
+                state.stream = null;
+            }
         };
 
         window.switchCamera = function() {
             state.facingMode = state.facingMode === 'user' ? 'environment' : 'user';
-            document.getElementById('video').classList.toggle('scale-x-[-1]', state.facingMode === 'user');
+            const video = document.getElementById('video');
+            if (video) video.classList.toggle('scale-x-[-1]', state.facingMode === 'user');
             window.startCamera();
         };
 
-        window.goHome = function() { window.stopCamera(); showScreen('home'); };
+        window.goHome = function() {
+            window.stopCamera();
+            showScreen('home');
+        };
 
         window.initiateCapture = function() {
             const overlay = document.getElementById('countdown-overlay');
             const text = document.getElementById('countdown-text');
             overlay.classList.remove('hidden');
-            let count = 5; text.innerText = count;
+            let count = 5;
+            text.innerText = count;
             const timer = setInterval(() => {
-                count--; text.innerText = count;
-                if (count === 0) { clearInterval(timer); overlay.classList.add('hidden'); capture(); }
+                count--;
+                text.innerText = count;
+                if (count === 0) {
+                    clearInterval(timer);
+                    overlay.classList.add('hidden');
+                    capture();
+                }
             }, 1000);
         };
 
@@ -239,58 +260,87 @@
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
-            const s = 1080; canvas.width = s; canvas.height = s;
+            const s = 1080;
+            canvas.width = s;
+            canvas.height = s;
+
             ctx.save();
-            if (state.facingMode === 'user') { ctx.scale(-1, 1); ctx.translate(-s, 0); }
-            const vr = video.videoWidth / video.videoHeight;
+            if (state.facingMode === 'user') {
+                ctx.scale(-1, 1);
+                ctx.translate(-s, 0);
+            }
+
+            const videoRatio = video.videoWidth / video.videoHeight;
             let dw, dh, ox, oy;
-            if (vr > 1) { dh = s; dw = s * vr; ox = (s - dw) / 2; oy = 0; }
-            else { dw = s; dh = s / vr; ox = 0; oy = (s - dh) / 2; }
+            if (videoRatio > 1) {
+                dh = s; dw = s * videoRatio;
+                ox = (s - dw) / 2; oy = 0;
+            } else {
+                dw = s; dh = s / videoRatio;
+                ox = 0; oy = (s - dh) / 2;
+            }
             ctx.drawImage(video, ox, oy, dw, dh);
             ctx.restore();
+            
             drawFrame(ctx, s);
             
-            // Use JPEG for faster cloud upload
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
             state.currentPhotoUrl = dataUrl;
             document.getElementById('preview-img').src = dataUrl;
             
             showScreen('preview');
             window.stopCamera();
             
-            // Upload to Cloud - Rule 3: Guard Firestore operation
-            if (state.user) {
+            // Sync to Cloud if available
+            if (db && state.user) {
                 const statusEl = document.getElementById('upload-status');
                 statusEl.innerText = "SAVING TO CLOUD...";
-                statusEl.className = "bg-blue-500 text-white px-8 py-3 rounded-full font-black text-sm mb-8";
-
                 try {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'selfies'), {
                         image: dataUrl,
                         timestamp: Date.now()
                     });
                     statusEl.innerText = "SAVED TO CLOUD ✅";
-                    statusEl.classList.replace('bg-blue-500', 'bg-green-500');
+                    statusEl.className = "bg-green-500 text-white px-8 py-3 rounded-full font-black text-sm mb-8";
                 } catch (e) {
-                    console.error("Upload error:", e);
                     statusEl.innerText = "SAVED LOCALLY 💾";
                 }
+            } else {
+                document.getElementById('upload-status').innerText = "SAVED LOCALLY 💾";
             }
 
-            // Auto Download for physical device
+            // Local fallback save
+            if (!state.recentPhotos.includes(dataUrl)) {
+                state.recentPhotos.unshift(dataUrl);
+                state.recentPhotos = state.recentPhotos.slice(0, 24);
+                localStorage.setItem('sweet_angels_local_cache', JSON.stringify(state.recentPhotos));
+                updateGallery();
+            }
+
+            // Trigger Download
             const link = document.createElement('a');
-            link.href = dataUrl; link.download = `SweetAngelsSelfie_${Date.now()}.jpg`; link.click();
+            link.href = dataUrl;
+            link.download = `SweetAngelsSelfie_${Date.now()}.jpg`;
+            link.click();
             
             state.timeout = setTimeout(window.showThankYou, 10000);
         }
 
         function drawFrame(ctx, s) {
-            ctx.strokeStyle = '#60A5FA'; ctx.lineWidth = 40; ctx.strokeRect(20, 20, s - 40, s - 40);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'; ctx.fillRect(0, 0, s, 140);
-            ctx.fillStyle = '#3B82F6'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign = 'center';
+            ctx.strokeStyle = '#60A5FA';
+            ctx.lineWidth = 40;
+            ctx.strokeRect(20, 20, s - 40, s - 40);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.fillRect(0, 0, s, 140);
+            ctx.fillStyle = '#3B82F6';
+            ctx.font = 'bold 48px sans-serif';
+            ctx.textAlign = 'center';
             ctx.fillText('SWEET ANGELS - HAPPY CUSTOMER', s / 2, 90);
+
             ctx.fillRect(0, s - 140, s, 140);
-            ctx.fillStyle = '#F472B6'; ctx.font = 'bold 42px sans-serif';
+            ctx.fillStyle = '#F472B6';
+            ctx.font = 'bold 42px sans-serif';
             ctx.fillText('I LOVE SHOPPING AT SWEET ANGELS', s / 2, s - 60);
         }
 
@@ -301,7 +351,7 @@
                 empty.classList.add('hidden');
                 grid.innerHTML = state.recentPhotos.map(src => `
                     <div class="aspect-square rounded-[2rem] overflow-hidden shadow-lg border-4 border-white animate-in fade-in zoom-in duration-300">
-                        <img src="${src}" class="w-full h-full object-cover">
+                        <img src="${src}" class="w-full h-full object-cover" loading="lazy">
                     </div>
                 `).join('');
             }
@@ -336,6 +386,16 @@
             showScreen('thankyou');
             setTimeout(() => showScreen('home'), 3000);
         };
+
+        // Attach Event Listeners explicitly to ensure responsiveness
+        document.getElementById('btn-start').addEventListener('click', window.startCamera);
+        document.getElementById('btn-home').addEventListener('click', window.goHome);
+        document.getElementById('btn-capture').addEventListener('click', window.initiateCapture);
+        document.getElementById('btn-switch').addEventListener('click', window.switchCamera);
+        document.getElementById('btn-share').addEventListener('click', window.sharePhoto);
+        document.getElementById('btn-retake').addEventListener('click', window.startCamera);
+        document.getElementById('btn-done').addEventListener('click', window.showThankYou);
+
     </script>
 </body>
 </html>
